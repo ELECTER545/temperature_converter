@@ -19,8 +19,15 @@ env/
 .DS_Store
 Thumbs.db
 
-.venv/
-__pycache__/
-*.pyc
-history.csv
 .vscode/
+.idea/
+*.swp
+*.swo
+
+build/
+dist/
+*.egg-info/
+
+history.csv
+history_test.csv
+*.log

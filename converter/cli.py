@@ -115,6 +115,21 @@ class ConsoleApp:
         """Провести пользователя по сценарию конвертации."""
         from_scale = self._choose_scale("Исходная шкала")
         to_scale = self._choose_scale("Целевая шкала")
+
+        # Если шкалы совпадают, конвертация тривиальна — предупреждаем
+        # и спрашиваем подтверждение. Пользователь может случайно выбрать
+        # одну и ту же шкалу в обоих меню.
+        if from_scale is to_scale:
+            print()
+            print(
+                f"Внимание: исходная и целевая шкалы совпадают "
+                f"({from_scale}). Результат будет равен введённому значению."
+            )
+            answer = self._safe_input("Продолжить? (y/n): ").strip().lower()
+            if answer not in ("y", "yes", "д", "да"):
+                print("Отменено.")
+                return
+
         value = self._prompt_temperature(from_scale)
 
         try:
@@ -141,12 +156,9 @@ class ConsoleApp:
 
     def _choose_scale(self, title: str) -> TemperatureScale:
         """Запросить шкалу через нумерованное меню.
-
         Повторяет запрос, пока пользователь не введёт корректный номер.
-
         Args:
             title: заголовок меню («Исходная шкала» / «Целевая шкала»).
-
         Returns:
             Выбранная шкала.
         """
@@ -166,10 +178,8 @@ class ConsoleApp:
 
     def _prompt_temperature(self, scale: TemperatureScale) -> float:
         """Запросить значение температуры, пока ввод не станет корректным.
-
         Args:
             scale: шкала, в которой вводится значение (для приглашения).
-
         Returns:
             Числовое значение.
         """
@@ -209,7 +219,6 @@ class ConsoleApp:
     @staticmethod
     def _print_record(record: HistoryRecord) -> None:
         """Напечатать одну запись истории в формате "дата  36.60 C = 97.88 F".
-
         Args:
             record: запись истории.
         """
