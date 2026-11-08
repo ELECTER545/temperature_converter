@@ -19,15 +19,4 @@ env/
 .DS_Store
 Thumbs.db
 
-.vscode/
-.idea/
-*.swp
-*.swo
 
-build/
-dist/
-*.egg-info/
-
-history.csv
-history_test.csv
-*.log
