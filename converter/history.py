@@ -62,9 +62,7 @@ class HistoryStorage:
 
     Args:
         path: путь к CSV-файлу истории. Файл может не существовать —
-            он будет создан при первом добавлении записи.
-    """
-
+            он будет создан при первом добавлении записи.    """
     def __init__(self, path: Path) -> None:
         self._path = path
 
@@ -94,11 +92,11 @@ class HistoryStorage:
 
         Returns:
             Созданная запись (с проставленным временем).
-
+            
         Raises:
             HistoryError: если файл нельзя открыть/записать или
-                запись не сериализуется в CSV.
-        """
+                запись не сериализуется в CSV. """
+
         record = HistoryRecord(
             timestamp=datetime.now(),
             from_scale=from_scale,
