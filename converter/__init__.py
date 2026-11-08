@@ -2,10 +2,6 @@
 Публичный API пакета — то, что можно импортировать как `from converter import X`.
 Внутренние модули (например, `converter._helpers`) не считаются частью API
 и могут меняться без предупреждения.
-Пример:
-    >>> from converter import TemperatureScale, convert
-    >>> convert(0, TemperatureScale.CELSIUS, TemperatureScale.FAHRENHEIT)
-    32.0
 """
 
 from __future__ import annotations

@@ -18,8 +18,11 @@
 ## Установка
 
 ```powershell
-# Создать виртуальное окружение (по желанию, но рекомендуется)
+# 1. Создать виртуальное окружение (по желанию, но рекомендуется)
 python -m venv .venv
 .venv\Scripts\Activate.ps1    # PowerShell
 # или
 .venv\Scripts\activate.bat    # cmd
+
+# 2. «Установить» зависимости (ничего не поставит — их нет)
+pip install -r requirements.txt
