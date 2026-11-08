@@ -13,6 +13,7 @@
 from __future__ import annotations
 
 import csv
+import itertools
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
@@ -106,12 +107,14 @@ class HistoryStorage:
             # между строками появятся пустые строки из-за \r\n.
             # encoding="utf-8" — чтобы русские сообщения и любые
             # не-ASCII символы читались корректно на любой локали.
-            is_new = not self._path.exists()
+            # Заголовок нужен, если файла нет ИЛИ он пуст (пользователь
+            # мог стереть содержимое вручную — тогда is_new должен
+            # сработать, как и при первом запуске).
+            is_fresh = not self._path.exists() or self._path.stat().st_size == 0
             with self._path.open("a", encoding="utf-8", newline="") as fh:
                 writer = csv.writer(fh, delimiter=",")
-                if is_new:
+                if is_fresh:
                     writer.writerow(_CSV_HEADER)
-                writer.writerow(
                     (
                         record.timestamp.strftime("%Y-%m-%d %H:%M:%S"),
                         record.from_scale.short_name,
@@ -119,7 +122,6 @@ class HistoryStorage:
                         record.to_scale.short_name,
                         f"{record.to_value:.{VALUE_DECIMALS}f}",
                     )
-                )
         except OSError as exc:
             # Все ошибки файловой системы (нет прав, диск занят, путь
             # указывает на каталог и т.п.) приводим к одному типу.
@@ -144,15 +146,26 @@ class HistoryStorage:
         if not self._path.exists():
             return []
 
-        records: list[HistoryRecord] = []
+       records: list[HistoryRecord] = []
         try:
             with self._path.open("r", encoding="utf-8", newline="") as fh:
                 reader = csv.reader(fh, delimiter=",")
-                header = next(reader, None)
-                if header is None:
+                first_row = next(reader, None)
+                if first_row is None:
                     return []
 
-                for row in reader:
+                # Строка считается заголовком только если она действительно
+                # похожа на заголовок. Если пользователь удалил заголовок
+                # (или файл из другого источника), первая строка может быть
+                # данными — в этом случае не теряем её, пытаемся разобрать.
+                if tuple(first_row) == _CSV_HEADER:
+                    data_rows = reader
+                else:
+                    # itertools.chain позволяет обработать первую строку
+                    # как данные и продолжить итерацию по остатку файла.
+                    data_rows = itertools.chain([first_row], reader)
+
+                for row in data_rows:
                     record = _row_to_record(row)
                     if record is not None:
                         records.append(record)
